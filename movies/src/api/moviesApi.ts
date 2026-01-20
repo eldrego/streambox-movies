@@ -1,9 +1,10 @@
 import axios from 'axios';
 
 const apiKey = import.meta.env.VITE_TMDB_API_KEY;
+const baseURL = import.meta.env.VITE_APP_BASE_URL;
 
 export const moviesApi = axios.create({
-  baseURL: 'https://api.themoviedb.org/3',
+  baseURL,
   timeout: 8000,
 });
 

@@ -1,16 +1,16 @@
 // import { BrowserRouter } from 'react-router-dom';
 // import { lazy } from 'react';
 import MoviesApp from './MoviesApp';
-import useAuthStore from 'streambox/useAuthStore';
+// import useAuthStore from 'streambox/useAuthStore';
 
 export function App() {
-  const auth = useAuthStore({});
+  // const auth = useAuthStore({});
 
-  console.log({ auth });
+  // console.log({ auth });
 
-  if (!auth.user) {
-    return <div>Please login to view music</div>;
-  }
+  // if (!auth.user) {
+  //   return <div>Please login to view music</div>;
+  // }
 
   return (
     <div>
@@ -20,5 +20,3 @@ export function App() {
 }
 
 export default App;
-
-

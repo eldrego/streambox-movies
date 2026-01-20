@@ -2,8 +2,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import federation from '@originjs/vite-plugin-federation';
-// import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
-// import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
 import path from 'path';
 
 export default defineConfig(() => ({
@@ -36,19 +34,17 @@ export default defineConfig(() => ({
       exposes: {
         './MoviesApp': './src/app/app.tsx',
       },
+      // remotes: {
+      //   streambox: 'http://localhost:4201/assets/remoteEntry.js',
+      // },
       shared: ['react', 'react-dom'],
     }),
-    // nxViteTsPaths(),
-    // nxCopyAssetsPlugin(['*.md']),
   ],
-  // Uncomment this if you are using workers.
-  // worker: {
-  //   plugins: () => [ nxViteTsPaths() ],
-  // },
+
   build: {
-    rollupOptions: {
-      external: ['streambox/useAuthStore'],
-    },
+    // rollupOptions: {
+    //   external: ['streambox/useAuthStore'],
+    // },
     outDir: path.join(__dirname, '../dist'),
     emptyOutDir: true,
     reportCompressedSize: true,
