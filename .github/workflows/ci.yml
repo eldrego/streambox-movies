@@ -16,29 +16,50 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          filter: tree:0
           fetch-depth: 0
 
-      
-      # This enables task distribution via Nx Cloud
-      # Run this command as early as possible, before dependencies are installed
-      # Learn more at https://nx.dev/ci/reference/nx-cloud-cli#npx-nxcloud-startcirun
-      # Uncomment this line to enable task distribution
-      # - run: npx nx start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="build"
+      - uses: pnpm/action-setup@v4
 
-      
-      # Cache node_modules
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-       
-      - run: npm ci
+          cache: 'pnpm'
 
+      - run: pnpm install --frozen-lockfile
 
-      # Prepend any command with "nx-cloud record --" to record its logs to Nx Cloud
-      # - run: npx nx-cloud record -- echo Hello World
-      - run: npx nx run-many -t lint test build
-      # Nx Cloud recommends fixes for failures to help you get CI green faster. Learn more: https://nx.dev/ci/features/self-healing-ci
-      - run: npx nx fix-ci
-        if: always()
+      - run: pnpm nx run-many -t lint test build
+
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build movies Docker image
+        env:
+          VITE_TMDB_API_KEY: ${{ secrets.VITE_TMDB_API_KEY }}
+          VITE_APP_BASE_URL: ${{ secrets.VITE_APP_BASE_URL }}
+          VITE_APP_ACCESS_TOKEN: ${{ secrets.VITE_APP_ACCESS_TOKEN }}
+          VITE_APP_IMAGE_URL_ORIGINAL: ${{ secrets.VITE_APP_IMAGE_URL_ORIGINAL }}
+          VITE_APP_IMAGE_URL_WIDTH50: ${{ secrets.VITE_APP_IMAGE_URL_WIDTH50 }}
+          VITE_NEW_RELIC_ACCOUNT_ID: ${{ secrets.VITE_NEW_RELIC_ACCOUNT_ID }}
+          VITE_NEW_RELIC_TRUST_KEY: ${{ secrets.VITE_NEW_RELIC_TRUST_KEY }}
+          VITE_NEW_RELIC_AGENT_ID: ${{ secrets.VITE_NEW_RELIC_AGENT_ID }}
+          VITE_NEW_RELIC_LICENSE_KEY: ${{ secrets.VITE_NEW_RELIC_LICENSE_KEY }}
+          VITE_NEW_RELIC_APP_ID: ${{ secrets.VITE_NEW_RELIC_APP_ID }}
+        run: |
+          docker build \
+            --build-arg VITE_TMDB_API_KEY \
+            --build-arg VITE_APP_BASE_URL \
+            --build-arg VITE_APP_ACCESS_TOKEN \
+            --build-arg VITE_APP_IMAGE_URL_ORIGINAL \
+            --build-arg VITE_APP_IMAGE_URL_WIDTH50 \
+            --build-arg VITE_NEW_RELIC_ACCOUNT_ID \
+            --build-arg VITE_NEW_RELIC_TRUST_KEY \
+            --build-arg VITE_NEW_RELIC_AGENT_ID \
+            --build-arg VITE_NEW_RELIC_LICENSE_KEY \
+            --build-arg VITE_NEW_RELIC_APP_ID \
+            --tag streambox/movies:ci \
+            .
