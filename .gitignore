@@ -42,3 +42,9 @@ Thumbs.db
 .nx/workspace-data
 
 vite.config.*.timestamp*
+# local env — holds API keys; commit .env.example instead
+.env
+.env.local
+
+# Local docs — setup guides and notes, kept out of the repo
+docs/
