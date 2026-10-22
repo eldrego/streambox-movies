@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fetchMovies } from '../api/moviesApi';
+import { reportError } from '../newrelicEvents';
 
 export default function MoviesApp() {
   const [movies, setMovies] = useState<any[]>([]);
@@ -8,6 +9,7 @@ export default function MoviesApp() {
   useEffect(() => {
     fetchMovies()
       .then(setMovies)
+      .catch(reportError)
       .finally(() => setLoading(false));
   }, []);
 
