@@ -1,26 +1,21 @@
 import { render } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
 
 import App from './app';
 
-describe('App', () => {
-  it('should render successfully', () => {
-    const { baseElement } = render(
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>,
-    );
-    expect(baseElement).toBeTruthy();
-  });
+// moviesApi reads import.meta.env, which Jest cannot parse, and it calls TMDB
+// over the network — neither belongs in a unit test.
+jest.mock('../api/moviesApi', () => ({
+  fetchMovies: jest
+    .fn()
+    .mockResolvedValue([
+      { id: 1, title: 'Project Hail Mary', vote_average: 8.6 },
+    ]),
+}));
 
-  it('should have a greeting as the title', () => {
-    const { getAllByText } = render(
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>,
-    );
-    expect(
-      getAllByText(new RegExp('Welcome movies', 'gi')).length > 0,
-    ).toBeTruthy();
+describe('App', () => {
+  it('should render the movies list', async () => {
+    const { findByText } = render(<App />);
+
+    expect(await findByText('Project Hail Mary')).toBeTruthy();
   });
 });
